@@ -41,7 +41,8 @@ class LoginView(APIView):
         user = authenticate(username=username, password=password)
         print(user)
         if user:
-            return Response({'message': 'Login successful', 'user': user.username})
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({'message': 'Login successful', 'user': user.username, 'token': token.key})
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 class LogoutView(APIView):
@@ -51,9 +52,15 @@ class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        # If the user is not authenticated, return an error response
+        if not request.user.is_authenticated:
+            return Response({'detail': 'Authentication credentials were not provided.'},
+                            status=status.HTTP_401_UNAUTHORIZED)
+
         # Delete the user's token
         Token.objects.filter(user=request.user).delete()
         return Response({'message': 'Logged out successfully'}, status=status.HTTP_200_OK)
+
 
 class PasswordChangeView(APIView):
     """
