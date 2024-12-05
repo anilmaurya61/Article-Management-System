@@ -1,24 +1,21 @@
+# articles/permissions.py
 from rest_framework.permissions import BasePermission
 
 class IsJournalist(BasePermission):
     """
-    Custom permission to allow only journalists to create and edit their own articles.
+    Allows access only to journalists who created the article.
     """
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == 'journalist'
+        if request.user.is_authenticated:
+            if view.action in ['update', 'destroy'] and request.user == view.get_object().author:
+                return True
+            return False
+        return False
 
 
-class IsEditor(BasePermission):
+class IsEditorOrAdmin(BasePermission):
     """
-    Custom permission to allow only editors to approve, reject, or publish articles.
-    """
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == 'editor'
-
-
-class IsAdmin(BasePermission):
-    """
-    Custom permission to allow only admins to manage articles.
+    Allows access to editors and admins to approve, reject, or publish articles.
     """
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == 'admin'
+        return request.user.is_authenticated and (request.user.role == 'editor' or request.user.role == 'admin')

@@ -1,31 +1,24 @@
-
+# articles/models.py
 from django.db import models
-from users.models import User
-from django.utils import timezone
+from django.conf import settings
 
 
 class Article(models.Model):
-    # Article fields
-    title = models.CharField(max_length=255)
+    STATUS_CHOICES = [
+        ('draft', 'Draft'),
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('published', 'Published'),
+    ]
+
+    title = models.CharField(max_length=200)
     content = models.TextField()
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="articles")
-    image = models.ImageField(upload_to="articles/", blank=True, null=True)
-    tags = models.CharField(max_length=255, blank=True)
-    category = models.CharField(max_length=100, choices=[
-        ('tech', 'Technology'),
-        ('health', 'Health'),
-        ('business', 'Business'),
-        ('lifestyle', 'Lifestyle'),
-    ])
-    publish_date = models.DateTimeField(default=timezone.now)
-    status = models.CharField(
-        max_length=15,
-        choices=[('draft', 'Draft'), ('published', 'Published'), ('rejected', 'Rejected')],
-        default='draft'
-    )
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='articles')
+    image = models.ImageField(upload_to='articles_images/', blank=True, null=True)
+    tags = models.CharField(max_length=255, blank=True, null=True)
+    category = models.CharField(max_length=100)
+    publish_date = models.DateTimeField(blank=True, null=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
 
     def __str__(self):
         return self.title
-
-    class Meta:
-        ordering = ['-publish_date']
