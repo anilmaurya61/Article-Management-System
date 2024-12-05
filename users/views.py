@@ -42,7 +42,7 @@ class LoginView(APIView):
         print(user)
         if user:
             token, created = Token.objects.get_or_create(user=user)
-            return Response({'message': 'Login successful', 'user': user.username, 'token': token.key})
+            return Response({'message': 'Login successful', 'role': user.role, 'token': token.key})
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 class LogoutView(APIView):

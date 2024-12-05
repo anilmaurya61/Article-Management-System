@@ -11,6 +11,16 @@ from .serializers import ArticleSerializer
 from .permissions import IsJournalist, IsEditorOrAdmin
 
 
+class ArticleCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = ArticleSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class ArticleListView(ListCreateAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
