@@ -14,7 +14,7 @@ class Article(models.Model):
     subtitle = models.CharField(max_length=255, blank=True, null=True)
     content = models.TextField()
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='articles')
-    image = models.ImageField(upload_to='articles_images/', blank=True, null=True)
+    # image = models.ImageField(upload_to='articles_images/', blank=True, null=True)
     tags = models.CharField(max_length=255, blank=True, null=True)
     category = models.CharField(max_length=100)
     publish_date = models.DateTimeField(blank=True, null=True)

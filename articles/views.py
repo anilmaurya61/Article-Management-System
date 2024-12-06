@@ -24,7 +24,7 @@ class ArticleCreateView(APIView):
 class ArticleListView(ListCreateAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     pagination_class = PageNumberPagination
     filter_backends = [SearchFilter]
     search_fields = ['title', 'category', 'tags']

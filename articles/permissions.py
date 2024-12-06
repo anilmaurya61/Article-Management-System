@@ -11,7 +11,6 @@ class IsJournalist(BasePermission):
             return False
         return False
 
-
 class IsEditorOrAdmin(BasePermission):
     """
     Allows access to editors and admins to approve, reject, or publish articles.

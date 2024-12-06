@@ -5,7 +5,7 @@ from .models import Article
 class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
-        fields = ['id', 'title', 'subtitle', 'content', 'tags', 'category', 'publish_date', 'author', 'image']
+        fields = ['id', 'title', 'subtitle', 'content', 'tags', 'category', 'publish_date', 'author']
         read_only_fields = ['id', 'author']  # Prevent users from modifying these fields
 
     def validate_title(self, value):
@@ -19,13 +19,6 @@ class ArticleSerializer(serializers.ModelSerializer):
         if value <= now().date():
             raise serializers.ValidationError("The publish date must be in the future.")
         return value
-
-    def validate(self, attrs):
-        """Additional validations."""
-        tags = attrs.get('tags', '')
-        if tags and not isinstance(tags, list):
-            raise serializers.ValidationError({"tags": "Tags must be a list of strings."})
-        return attrs
 
     def create(self, validated_data):
         """Handle article creation, setting the author as the logged-in user."""
