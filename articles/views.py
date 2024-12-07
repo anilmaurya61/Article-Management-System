@@ -7,7 +7,7 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.filters import SearchFilter
 from .models import Article
-from .serializers import ArticleSerializer
+from .serializers import ArticleSerializer, ArticleListSerializer
 from .permissions import IsJournalist, IsEditorOrAdmin
 
 
@@ -23,7 +23,7 @@ class ArticleCreateView(APIView):
 
 class ArticleListView(ListCreateAPIView):
     queryset = Article.objects.all()
-    serializer_class = ArticleSerializer
+    serializer_class = ArticleListSerializer
     # permission_classes = [IsAuthenticated]
     pagination_class = PageNumberPagination
     filter_backends = [SearchFilter]
@@ -35,55 +35,31 @@ class ArticleListView(ListCreateAPIView):
 
 class ArticleDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Article.objects.all()
-    serializer_class = ArticleSerializer
+    serializer_class = ArticleListSerializer
     permission_classes = [IsAuthenticated]
-    lookup_field = 'id'
-
+    lookup_field = 'pk'
 
 class ArticlePublishView(APIView):
     """
-    Allow Editors and Admins to approve and publish articles.
+    Allow Editors and Admins to approve and publish articles, with status as a query parameter.
     """
     permission_classes = [IsEditorOrAdmin]
 
     def post(self, request, pk):
+        status_param = request.data.get('status')  # Use .get() to avoid KeyError
+        if not status_param:
+            return Response({'error': 'Status is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Ensure the status is valid (you can customize this list as needed)
+        if status_param not in ['reviewed', 'published', 'approved', 'rejected']:
+            return Response({'error': 'Invalid status provided'}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
             article = Article.objects.get(id=pk)
-            article.status = 'published'
-            article.publish_date = timezone.now()
+            article.status = status_param
+            if status_param == 'published':
+                article.publish_date = timezone.now()
             article.save()
-            return Response({'message': 'Article published successfully'}, status=status.HTTP_200_OK)
-        except Article.DoesNotExist:
-            return Response({'error': 'Article not found'}, status=status.HTTP_404_NOT_FOUND)
-
-
-class ArticleApproveView(APIView):
-    """
-    Allow Editors and Admins to approve articles.
-    """
-    permission_classes = [IsEditorOrAdmin]
-
-    def post(self, request, pk):
-        try:
-            article = Article.objects.get(id=pk)
-            article.status = 'approved'
-            article.save()
-            return Response({'message': 'Article approved successfully'}, status=status.HTTP_200_OK)
-        except Article.DoesNotExist:
-            return Response({'error': 'Article not found'}, status=status.HTTP_404_NOT_FOUND)
-
-
-class ArticleRejectView(APIView):
-    """
-    Allow Editors and Admins to reject articles.
-    """
-    permission_classes = [IsEditorOrAdmin]
-
-    def post(self, request, pk):
-        try:
-            article = Article.objects.get(id=pk)
-            article.status = 'pending'
-            article.save()
-            return Response({'message': 'Article rejected successfully'}, status=status.HTTP_200_OK)
+            return Response({'message': f'Article status updated to {status_param} successfully'}, status=status.HTTP_200_OK)
         except Article.DoesNotExist:
             return Response({'error': 'Article not found'}, status=status.HTTP_404_NOT_FOUND)

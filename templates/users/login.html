@@ -71,14 +71,8 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             responseMessage.textContent = 'Login successful!';
             responseMessage.classList.add('text-success');
 
-            // Redirect based on role
-            if (role === 'journalist') {
-                window.location.href = '/article/create/';
-            } else if (role === 'admin') {
-                window.location.href = '/index/';
-            } else if (role === 'editor') {
-                window.location.href = '/index/';
-            }
+            window.location.href = '/'
+
         } else {
             const errorData = await response.json();
             responseMessage.textContent = errorData.detail || 'Login failed. Please try again.';

@@ -5,9 +5,10 @@ from django.conf import settings
 class Article(models.Model):
     STATUS_CHOICES = [
         ('draft', 'Draft'),
-        ('pending', 'Pending'),
+        ('reviewed', 'Reviewed'),
         ('approved', 'Approved'),
         ('published', 'Published'),
+        ('rejected', 'Rejected')
     ]
 
     title = models.CharField(max_length=200)

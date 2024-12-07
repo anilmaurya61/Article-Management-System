@@ -26,3 +26,9 @@ class ArticleSerializer(serializers.ModelSerializer):
         user = request.user
         validated_data['author'] = user
         return super().create(validated_data)
+
+class ArticleListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Article
+        fields = ['id', 'title', 'subtitle', 'content', 'tags', 'category', 'publish_date', 'author', 'status']
+        read_only_fields = ['id', 'author']
