@@ -29,8 +29,8 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Dashboard</a></li>
                 {% if user.is_authenticated %}
-                <!--                        <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Dashboard</a></li>-->
                 {% if user.role == 'journalist' %}
                 <li class="nav-item"><a class="nav-link btn btn-primary" href="{% url 'article_create' %}">Create
                     Article</a></li>
