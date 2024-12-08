@@ -2,6 +2,9 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
 from django.contrib.auth.views import LogoutView
+from django.conf.urls.static import static
+from django.conf import settings
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -16,4 +19,4 @@ urlpatterns = [
     path('article/list/', TemplateView.as_view(template_name='articles/list.html'), name='article_list'),
     path('article/create/', TemplateView.as_view(template_name='articles/create.html'), name='article_create'),
     path('article/edit/<int:id>/', TemplateView.as_view(template_name='articles/edit.html'), name='article_edit'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

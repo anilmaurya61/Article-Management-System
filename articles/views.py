@@ -63,3 +63,19 @@ class ArticlePublishView(APIView):
             return Response({'message': f'Article status updated to {status_param} successfully'}, status=status.HTTP_200_OK)
         except Article.DoesNotExist:
             return Response({'error': 'Article not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class ArticleDeleteView(APIView):
+    """
+    Allow deletion of articles. Only authenticated users can delete.
+    Additional permissions can be added if necessary (e.g., only admins or authors can delete).
+    """
+    permission_classes = [IsEditorOrAdmin]
+
+    def delete(self, request, pk):
+        try:
+            article = Article.objects.get(id=pk)
+            article.delete()
+            return Response({'message': 'Article deleted successfully.'}, status=status.HTTP_200_OK)
+        except Article.DoesNotExist:
+            return Response({'error': 'Article not found.'}, status=status.HTTP_404_NOT_FOUND)
