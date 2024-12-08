@@ -104,10 +104,12 @@ fetch(apiURL)
                     <td>${article.content}</td>
                     <td>${article.tags}</td>
                     <td>${article.category}</td>
-                    <td>${article.status}</td><td>${article.author}</td>
+                    <td>${article.status}</td>
+                    <td>${article.id}</td>
                     ${userRole === 'admin' || userRole === 'editor' ? `
-                        <button class="btn btn-sm btn-primary">Edit</button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteArticle(${article.id})">Delete</button>
+                        <button class="btn btn-sm btn-primary" onclick="window.location.href='/article/edit/${article.id}'">Edit</button>
+
+                         <button class="btn btn-sm btn-danger" onclick="deleteArticle(${article.id})">Delete</button>
 
 
                         <!-- Review Button (Only visible if status is 'draft') -->
@@ -130,7 +132,8 @@ fetch(apiURL)
                         ` : ''}
 
                     ` : userRole === 'journalist' && article.author === "{{ user.username }}" ? `
-                        <button class="btn btn-sm btn-primary">Edit</button>
+                                                 <button class="btn btn-sm btn-primary" onclick="window.location.href='/article/edit/${article.id}'">Edit</button>
+
                     ` : ''}
                     </td>
                 </tr>
